@@ -1,0 +1,58 @@
+{% load bootstrap4 %}
+{% bootstrap_css %}
+<link href="https://fonts.googleapis.com/css?family=Courgette&display=swap" rel="stylesheet">
+<body>
+        <nav class="navbar navbar-expand-lg navbar-dark " style="background-color: #283593;">
+               
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                            <img src="https://iconmonstr.com/wp-content/g/gd/makefg.php?i=../assets/preview/2014/png/iconmonstr-cube-2.png&r=255&g=255&b=255" style="height: 50px;">
+                            <a class="navbar-brand" href="#" style="font-family: 'Courgette', cursive; font-size:26px;">&nbsp; DELIVERY</a>
+                            {% if not request.user.is_authenticated %}
+                            
+                            {% else %}
+                            <a class="navbar-brand" href="customer">Clientes</a>
+                            <a class="navbar-brand" href="employee">Colaboradores</a>
+                            <a class="navbar-brand" href="entrega">Entregas</a>
+                            <a class="navbar-brand" href="ingreso">Ingreso de paquetes</a>
+                            <a class="navbar-brand" href="customer">Clientes</a>
+                            <a class="navbar-brand" href="package">Paquetes</a>
+                            <a class="navbar-brand" href="packaget">Todos</a>
+                            {% endif %}
+                    </ul>
+                </div>
+
+                <form class="form-inline">
+                            {% if not request.user.is_authenticated %}
+                            
+                            {% else %}
+                            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                                <ul class="navbar-nav" style="margin-right: 20px;">
+                                    <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white; font-size: 18px; font-weight: 400;">
+                                    {{user.username}}
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="padding-left: 10px;">
+
+                                    <a class="navbar-brand" href="{% url 'logout' %}" style="color: black;"> Salir </a>
+
+                                    </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            {% endif %}
+                </form>
+            </nav>
+            <br>
+            <br>
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+    {% bootstrap_javascript jquery='full' %}
+</body>
+

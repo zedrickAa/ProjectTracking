@@ -1,0 +1,660 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Iniciar sesión{% endblock %}
+{% block content %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+<link href="https://fonts.googleapis.com/css?family=Courgette&display=swap" rel="stylesheet">
+<!DOCTYPE html>
+
+<style>
+    .dataTables_filter {
+        margin-bottom: 10px;
+        margin-right: 5px;
+    }
+</style>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Vue-js | Django | Crud App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A simple crud app made with the vue js and django">
+
+    <meta name="keywords" content="vuejs, django, crudapp, restapi">
+    <!-- bootstap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- boostrap css -->
+
+  </head>
+  <body>
+        
+        <div id="starting">
+                <div class="container">
+                  <div class="row">
+                    <h1><p style="font-family: 'Courgette', cursive;">Lista de paquetes</p>
+                    <button  type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPackageModal">Add Package</button>
+                    <button class="btn btn-info" v-on:click="getPackages()">Transito</button>
+                    <button class="btn btn-danger" v-on:click="getPackages2">Bodega</button>
+                    <button class="btn btn-info" v-on:click="getPackages3">Entregado</button>
+                    </h1>
+                    
+                    <table class="table" >
+                      <thead>
+                        <tr>
+                          
+                          <th scope="col">Code</th>
+                          
+                                       
+                          <th scope="col">Destination</th>
+                          
+                          <th scope="col">Status</th>
+                          <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody v-for="package in packages">
+                        <tr>
+                                    <td>${package.id}</td>
+                                    
+                                    
+                                    <td>${package.destination}</td>
+                                   
+                                   
+                                    <td>${package.status}</td>  
+
+                           <td v-if="package.status === 'Transito'">
+                                <button class="btn btn-info" v-on:click="getPackage(package.id)">Detail</button>
+                                <button class="btn btn-danger" v-on:click="deletePackage(package.id)">Delete</button>
+                                <button class="btn btn-info" v-on:click="getPackage2(package.id)">Edit</button>
+                            </td> 
+                            <td v-if="package.status === 'Bodega'">
+                                <button class="btn btn-info" v-on:click="getPackage3(package.id)">Detail</button>
+                                <button class="btn btn-danger" v-on:click="deletePackage2(package.id)">Delete</button>
+                                <button class="btn btn-info" v-on:click="getPackage4(package.id)">Edit</button>
+                            </td> 
+                            <td v-if="package.status === 'Entregado'">
+                                <button class="btn btn-info" v-on:click="getPackage5(package.id)">Detail</button>
+                                <button class="btn btn-danger" v-on:click="deletePackage3(package.id)">Delete</button>
+                                <button class="btn btn-info" v-on:click="getPackage6(package.id)">Edit</button>
+                            </td> 
+                          
+                          
+                       
+                        </tr>
+                        
+                    
+                    </tbody>
+                   
+                </table>
+                 </div>
+                </div>
+
+                 <!-- Add Employee Modal -->
+                 <div class="modal fade" id="addPackageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLongTitle">Add Package</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <form v-on:submit.prevent="addPackage()">
+                        <div class="modal-body">
+                            <div class="form-group">
+                              <label for="user">Package Code</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="code"
+                                placeholder="Enter Package Code"
+                                v-model="newPackage.code"
+                                required="required" >
+                            </div>
+                            <div class="form-group">
+                                <label for="user">Package sender</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="sender"
+                                  placeholder="Enter Package Sender"
+                                  v-model="newPackage.sender"
+                                  required="required" >
+                              </div>
+                              <div class="form-group">
+                                <label for="user">Package consignee</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="consignee"
+                                  placeholder="Enter Package Consignee"
+                                  v-model="newPackage.consignee"
+                                  required="required" >
+                              </div>
+                              <div class="form-group">
+                                <label for="user">Package destination</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="destination"
+                                  placeholder="Enter Package Destination"
+                                  v-model="newPackage.destination"
+                                  required="required" >
+                              </div>
+                              <div class="form-group">
+                                <label for="phone">Package phone</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="phone"
+                                  placeholder="Enter Package phone"
+                                  v-model="newPackage.phone"
+                                  required="required" >
+                              </div>
+                              <div class="form-group">
+                                <label for="charge">Package charge</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="charge"
+                                  placeholder="Enter Package charge"
+                                  v-model="newPackage.charge"
+                                  required="required" >
+                              </div>
+                              <div class="form-group">
+                                <label for="charge_status">Package charge stats</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="charge_status"
+                                  placeholder="Enter Package charge status"
+                                  v-model="newPackage.charge_status"
+                                  required="required" >
+                              </div>
+                              <div class="form-group">
+                                <label for="status">Package  stats</label>
+                                
+                                 <select
+                                  class="form-control"
+                                  id="status"
+                                  v-model="newPackage.status"
+                                  required="required">
+                                  <option >Bodega</option>
+                                  <option >Transito</option>
+                                  <option >Entregado</option>
+                                 
+                                </select>
+                              </div>
+                              <div class="form-group">
+                                <label for="weight">Package  weight</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="weight"
+                                  placeholder="Enter Package weight"
+                                  v-model="newPackage.weight"
+                                  required="required" >
+                              </div>
+                              <div class="form-group">
+                                <label for="note">Package  note</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="note"
+                                  placeholder="Enter Package note"
+                                  v-model="newPackage.note"
+                                  required="required" >
+                              </div>
+                              <div class="form-group">
+                                <label for="employee">Package  employee</label>
+                                <input
+                                  
+                                  type="text"
+                                  class="form-control"
+                                  id="employee"
+                                  
+                                  
+                                  placeholder="{{user.username}}"
+                                  v-model="newPackage.employee"
+                                   >
+                              </div>
+                          
+                          
+                            
+                          
+                           
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary m-progress" data-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                        </form>
+        
+                      </div>
+                    </div>
+                    <div class="loading" v-if="loading===true">Loading&#8230;</div>
+                  </div>
+                  <!-- End of add Employee modal -->
+                        <!-- Edit Package Modal -->
+                    <div class="modal fade" id="editPackageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Detail Package</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            </div>
+                            <form v-on:submit.prevent="updatePackage()">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                <label for="code">Package Code</label>
+                                
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="id"
+                                    placeholder="Enter Package Code"
+                                    v-model="currentPackage.id"
+                                    required="required" 
+                                    readonly>
+                                    <img id="codigo"/>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary m-progress" data-dismiss="modal">Close</button>
+                            
+                            </div>
+                            </form>
+                        </div>
+                        </div>
+                        <div class="loading" v-if="loading===true">Loading&#8230;</div>
+                    </div>
+                    <!-- End of edit location modal -->
+
+                    <!-- Edit Package Modal -->
+                    <div class="modal fade" id="editPackage2Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLongTitle">Edit Package</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                          </button>
+                          </div>
+                          <form v-on:submit.prevent="updatePackage()">
+                          <div class="modal-body">
+                              <div class="form-group">
+                              <label for="code">Package Code</label>
+                              
+                              <input
+                                  type="text"
+                                  class="form-control"
+                                  id="id"
+                                  placeholder="Enter Package Code"
+                                  v-model="currentPackage.id"
+                                  required="required"
+                                  readonly
+                                  > 
+                                
+
+                                  
+                              </div>
+                              
+                              
+                          </div>
+                          <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary m-progress" data-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary">Save changes</button>
+                          </div>
+                          </form>
+                      </div>
+                      </div>
+                      <div class="loading" v-if="loading===true">Loading&#8230;</div>
+                  </div>
+                  <!-- End of edit location modal -->
+                   
+        </div>
+
+        <!-- bootrtap js files -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+        <!-- vue.js files -->
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.5"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+        <script> 
+            $(document).ready(function() {
+            $('#mytable').DataTable();
+            });
+        </script>
+        <script type="text/javascript">
+                Vue.http.headers.common['X-CSRFToken'] = "{{ csrf_token }}";
+           new Vue({
+           el: '#todo',
+           delimiters: ['${','}'],
+           data: {
+               packages: [],
+               loading: true,
+               currentPackage: {},
+               message: null,
+               newPackage: { 'code': null,'sender': null,'consignee': null,'destination': null,'phone': null,'charge': null,'charge_status': null,'status': null,'weight': null,'note': null,'employee': null },
+               search_term: '',
+           },
+           mounted: function() {
+                
+                this.getPackages4();
+                
+            },
+            methods: {
+            getPackages4: function() {
+            let api_url = '/api/package4/';
+            if(this.search_term!==''||this.search_term!==null) {
+                api_url = `/api/package4/?search=${this.search_term}`
+            }
+            
+            this.loading = true;
+            this.$http.get(api_url)
+                .then((response) => {
+                    this.packages = response.data;
+                    this.loading = false;
+                })
+                .catch((err) => {
+                    this.loading = false;
+                    console.log(err);
+                })
+            },
+        }
+        )};
+        </script>
+        <script type="text/javascript">
+            Vue.http.headers.common['X-CSRFToken'] = "{{ csrf_token }}";
+           
+            new Vue({
+            el: '#starting',
+            delimiters: ['${','}'],
+            data: {
+                packages: [],
+                loading: true,
+                currentPackage: {},
+                message: null,
+                newPackage: { 'code': null,'sender': null,'consignee': null,'destination': null,'phone': null,'charge': null,'charge_status': null,'status': null,'weight': null,'note': null,'employee': null },
+                search_term: '',
+            },
+            datae: {
+            employees: [],
+            loading: true,
+            currentEmployee: {},
+            message: null,
+            newEmployee: { 'user': null, 'phone': null, 'address': null, 'location': null },
+            search_term: '',
+            },
+            mounted: function() {
+                
+                this.getPackages();
+                this.getPackages2();
+                this.getPackages3();
+                
+            },
+            methods: {
+            getPackages: function() {
+            let api_url = '/api/package/';
+            if(this.search_term!==''||this.search_term!==null) {
+                api_url = `/api/package/?search=${this.search_term}`
+            }
+            
+            this.loading = true;
+            this.$http.get(api_url)
+                .then((response) => {
+                    this.packages = response.data;
+                    this.loading = false;
+                })
+                .catch((err) => {
+                    this.loading = false;
+                    console.log(err);
+                })
+            },
+            getPackages2: function() {
+            let api_url = '/api/package2/';
+            if(this.search_term!==''||this.search_term!==null) {
+                api_url = `/api/package2/?search=${this.search_term}`
+            }
+            
+            this.loading = true;
+            this.$http.get(api_url)
+                .then((response) => {
+                    this.packages = response.data;
+                    this.loading = false;
+                })
+                .catch((err) => {
+                    this.loading = false;
+                    console.log(err);
+                })
+            },
+            getPackages3: function() {
+            let api_url = '/api/package3/';
+            if(this.search_term!==''||this.search_term!==null) {
+                api_url = `/api/package3/?search=${this.search_term}`
+            }
+            
+            this.loading = true;
+            this.$http.get(api_url)
+                .then((response) => {
+                    this.packages = response.data;
+                    this.loading = false;
+                })
+                .catch((err) => {
+                    this.loading = false;
+                    console.log(err);
+                })
+            },
+            getPackages4: function() {
+            let api_url = '/api/package4/';
+            if(this.search_term!==''||this.search_term!==null) {
+                api_url = `/api/package4/?search=${this.search_term}`
+            }
+            
+            this.loading = true;
+            this.$http.get(api_url)
+                .then((response) => {
+                    this.packages = response.data;
+                    this.loading = false;
+                })
+                .catch((err) => {
+                    this.loading = false;
+                    console.log(err);
+                })
+            },
+            genCode: function(code) {
+                JsBarcode("#codigo", code);
+            },
+            getEmployees: function() {
+            let api_url = '/api/employee/';
+            if(this.search_term!==''||this.search_term!==null) {
+                api_url = `/api/employee/?search=${this.search_term}`
+            }
+            this.loading = true;
+            this.$http.get(api_url)
+                .then((response) => {
+                    this.employees = response.data;
+                    this.loading = false;
+                })
+                .catch((err) => {
+                    this.loading = false;
+                    console.log(err);
+                })
+            },
+            getPackage: function(id) {
+                this.loading = true;
+                JsBarcode("#codigo", id);
+                this.$http.get(`/api/package/${id}/`)
+                    .then((response) => {
+                        this.currentPackage = response.data;
+                        $("#editPackageModal").modal('show');
+                        this.loading = false;
+                    })
+                    .catch((err) => {
+                        this.loading = false;
+                        console.log(err);
+                    })
+            },
+            getPackage2: function(id) {
+                this.loading = true;
+                JsBarcode("#codigo", id);
+                this.$http.get(`/api/package/${id}/`)
+                    .then((response) => {
+                        this.currentPackage = response.data;
+                        $("#editPackage2Modal").modal('show');
+                        this.loading = false;
+                    })
+                    .catch((err) => {
+                        this.loading = false;
+                        console.log(err);
+                    })
+            },
+            getPackage3: function(id) {
+                this.loading = true;
+                JsBarcode("#codigo", id);
+                this.$http.get(`/api/package2/${id}/`)
+                    .then((response) => {
+                        this.currentPackage = response.data;
+                        $("#editPackageModal").modal('show');
+                        this.loading = false;
+                    })
+                    .catch((err) => {
+                        this.loading = false;
+                        console.log(err);
+                    })
+            },
+            getPackage4: function(id) {
+                this.loading = true;
+                JsBarcode("#codigo", id);
+                this.$http.get(`/api/package2/${id}/`)
+                    .then((response) => {
+                        this.currentPackage = response.data;
+                        $("#editPackage2Modal").modal('show');
+                        this.loading = false;
+                    })
+                    .catch((err) => {
+                        this.loading = false;
+                        console.log(err);
+                    })
+            },
+            getPackage5: function(id) {
+                this.loading = true;
+                JsBarcode("#codigo", id);
+                this.$http.get(`/api/package3/${id}/`)
+                    .then((response) => {
+                        this.currentPackage = response.data;
+                        $("#editPackageModal").modal('show');
+                        this.loading = false;
+                    })
+                    .catch((err) => {
+                        this.loading = false;
+                        console.log(err);
+                    })
+            },
+            getPackage6: function(id) {
+                this.loading = true;
+                JsBarcode("#codigo", id);
+                this.$http.get(`/api/package3/${id}/`)
+                    .then((response) => {
+                        this.currentPackage = response.data;
+                        $("#editPackage2Modal").modal('show');
+                        this.loading = false;
+                    })
+                    .catch((err) => {
+                        this.loading = false;
+                        console.log(err);
+                    })
+            },
+            getPackage7: function(id) {
+                this.loading = true;
+                JsBarcode("#codigo", id);
+                this.$http.get(`/api/package4/${id}/`)
+                    .then((response) => {
+                        this.currentPackage = response.data;
+                        $("#editPackage2Modal").modal('show');
+                        this.loading = false;
+                    })
+                    .catch((err) => {
+                        this.loading = false;
+                        console.log(err);
+                    })
+            },
+            addPackage: function() {
+                this.loading = true;
+                this.newPackage.employee = {{user.id}};
+                this.$http.post('/api/package/',this.newPackage)
+                    .then((response) => {
+                        this.loading = true;
+                        this.getPackages();
+                    })
+                    .catch((err) => {
+                        this.loading = true;
+                        console.log(err);
+                    })
+            },
+            updatePackage: function() {
+                this.loading = true;
+                this.currentPackage.employee = {{user.id}};
+                this.$http.put(`/api/package/${this.currentPackage.id}/`, this.currentPackage)
+                this.$http.put(`/api/package2/${this.currentPackage.id}/`, this.currentPackage)
+                this.$http.put(`/api/package3/${this.currentPackage.id}/`, this.currentPackage)
+                    .then((response) => {
+                        this.loading = false;
+                        this.currentPackage = response.data;
+                        this.getPackages();
+                    })
+                    .catch((err) => {
+                        this.loading = false;
+                        console.log(err);
+                    })
+            },
+            deletePackage: function(id) {
+                this.loading = true;
+                this.$http.delete(`/api/package/${id}/`)
+                    .then((response) => {
+                        this.loading = false;
+                        this.getPackages();
+                    })
+                    .catch((err) => {
+                        this.loading = false;
+                        console.log(err);
+                    })
+            },
+            deletePackage2: function(id) {
+                this.loading = true;
+                this.$http.delete(`/api/package2/${id}/`)
+                    .then((response) => {
+                        this.loading = false;
+                        this.getPackages3();
+                    })
+                    .catch((err) => {
+                        this.loading = false;
+                        console.log(err);
+                    })
+            },
+            deletePackage3: function(id) {
+                this.loading = true;
+                this.$http.delete(`/api/package3/${id}/`)
+                    .then((response) => {
+                        this.loading = false;
+                        this.getPackages5();
+                    })
+                    .catch((err) => {
+                        this.loading = false;
+                        console.log(err);
+                    })
+            }
+        }
+        
+        });
+  
+   </script>
+  </body>
+</html>
+{% bootstrap_javascript jquery='full' %}
+{% endblock %}
